@@ -23,13 +23,13 @@ def transactional(func):
     @functools.wraps(func)
     def wrapper(conn, *args, **kwargs):
         try:
-            result = func(conn, *args, **kwargs)  # Run the DB logic
-            conn.commit()  # Commit changes
+            result = func(conn, *args, **kwargs) 
+            conn.commit()
             return result
         except Exception as e:
-            conn.rollback()  # Roll back on error
+            conn.rollback()
             print("Transaction failed. Changes rolled back.")
-            raise e  # Re-raise the exception
+            raise e
     return wrapper
 
 @with_db_connection 
