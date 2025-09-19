@@ -39,6 +39,7 @@ class Conversation(models.Model):
     participants_id references to a user participating in the conversation.
     created_at is the timestamp when the conversation is created
     """
+    conversation_id = models.AutoField(primary_key=True)
     participants_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at      = models.DateTimeField(auto_add_now=True)
 
@@ -49,6 +50,7 @@ class Message(models.Model):
     message_body contains the message field to be sent
     sent_at is the timestamp when the message is sent
     """
+    message_id      = models.AutoField(primary_key=True)
     sender_id       = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     message_body    = models.TextField(null=False)
     sent_at         = models.DateTimeField(auto_addd_now=True)
