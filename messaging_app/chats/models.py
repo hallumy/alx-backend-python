@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext as _
 
@@ -17,6 +18,10 @@ class CustomUser(AbstractUser):
         ('host', _('Host')),
         ('admin', _('Admin')),
     ]
+    user_id = models.UUIDField(primary_key=True, editable=False)
+
+    first_name   = models.CharField(max_length=150, blank=True)
+    last_name    = models.CharField(max_length=150, blank=True)
     email        = models.EmailField(unique=True)
     phone_number = models.CharField(max_length = 20, blank = True, null=True)
     role         = models.CharField(blank=True, choices=ROLES, default='guest')
@@ -26,7 +31,7 @@ class CustomUser(AbstractUser):
         """
         Returns a string representation of the user
         """
-        return f"{self.username} ({self.role})"
+        return f"{self.first_name} {self.last_name} ({self.role})"
 
 class Conversation(models.Model):
     """
