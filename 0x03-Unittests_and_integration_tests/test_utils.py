@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""
+This module contains unit tests for utils.py functions, including
+tests for access_nested_map, get_json, and the memoize decorator.
+"""
 import unittest
 from parameterized import parameterized
 from utils import access_nested_map, get_json, memoize
@@ -52,7 +56,10 @@ class TestGetJson(unittest.TestCase):
         mock_response = Mock()
         mock_response.json.return_value = test_payload
 
-        with patch('utils.requests.get', return_value=mock_response) as mock_get:
+        with patch(
+            'utils.requests.get', return_value=mock_response
+        ) as mock_get:
+
             result = get_json(test_url)
 
         self.assertEqual(result, test_payload)
