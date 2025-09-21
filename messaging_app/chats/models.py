@@ -41,7 +41,7 @@ class Conversation(models.Model):
     """
     conversation_id = models.AutoField(primary_key=True)
     participants_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    created_at      = models.DateTimeField(auto_add_now=True)
+    created_at      = models.DateTimeField(auto_now_add=True)
 
 class Message(models.Model):
     """
@@ -53,4 +53,4 @@ class Message(models.Model):
     message_id      = models.AutoField(primary_key=True)
     sender_id       = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     message_body    = models.TextField(null=False)
-    sent_at         = models.DateTimeField(auto_addd_now=True)
+    sent_at         = models.DateTimeField(auto_now_add=True)

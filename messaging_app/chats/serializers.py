@@ -38,8 +38,8 @@ class ConversationSerializer(serializers.ModelSerializer):
     they are only included for representation purposes and not
     writable through this serializer by default.
     """
-    participants_id = CustomUserSerializer(many=True, Read_only=True)
-    message_body = MessageSerializer(many=True, Read_only=True)
+    participants_id = CustomUserSerializer(many=True, read_only=True)
+    message_body = MessageSerializer(many=True, read_only=True)
 
 
     class Meta:
