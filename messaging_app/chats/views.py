@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from .models import Conversation, Message, CustomUser
 from .serializers import ConversationSerializer, MessageSerializer
 from rest_framework.response import Response
@@ -46,7 +46,8 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['message']
     def get_queryset(self):
         return self.queryset.filter(conversation__participants=self.request.user)
 
