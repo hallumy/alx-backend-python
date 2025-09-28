@@ -3,6 +3,8 @@ from rest_framework import viewsets, permissions, status, filters
 from .models import Conversation, Message, CustomUser
 from .serializers import ConversationSerializer, MessageSerializer
 from rest_framework.response import Response
+from .permissions import IsParticipantOrSender
+
 
 class ConversationViewSet(viewsets.ModelViewSet):
     """
@@ -10,7 +12,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
     """
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsParticipantOrSender]
     
     def get_queryset(self):
         return self.queryset.filter(participants=self.request.user)
@@ -45,7 +47,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsParticipantOrSender]
     filter_backends = [filters.SearchFilter]
     search_fields = ['message']
     def get_queryset(self):
