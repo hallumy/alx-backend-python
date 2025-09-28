@@ -7,6 +7,9 @@ from .permissions import IsParticipantOrSender
 from .pagination import MessagePagination
 from .filters import MessageFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.status import HTTP_403_FORBIDDEN
+from rest_framework.permissions import IsAuthenticated
 
 class ConversationViewSet(viewsets.ModelViewSet):
     """
@@ -14,7 +17,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
     """
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [IsParticipantOrSender]
+    permission_classes = [IsAuthenticated, IsParticipantOrSender]
     
     def get_queryset(self):
         return self.queryset.filter(participants=self.request.user)
@@ -49,15 +52,19 @@ class MessageViewSet(viewsets.ModelViewSet):
     """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    permission_classes = [IsParticipantOrSender]
-    filter_backends = [DjangoFilterCackend, filters.SearchFilter]
+    permission_classes = [IsAuthenticated, IsParticipantOrSender]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_class = MessageFilter
     search_fields = ['message']
     pagination_class = MessagePagination
 
     def get_queryset(self):
-        return self.queryset.filter(conversation__participants=self.request.user)
-
+        user = self.request.user
+        conversation_id = self.request.query_params.get('conversation')
+        if conversation_id:
+            return Message.objects.filter(conversation__id=conversation_id, conversation__participants=user)
+        return Message.objects.filter(conversation__participants=user)
+    
     def perform_create(self, serializer):
         """
         Create a message in a conversation
@@ -65,6 +72,9 @@ class MessageViewSet(viewsets.ModelViewSet):
         """
         conversation = serializer.validated_data['conversation']
         if self.request.user not in conversation.participants.all():
-            raise PermissionError("You are not a participant in this conversation.")
-
+            return Response(
+                {"detail": "You are not a participant in this conversation."},
+                status=HTTP_403_FORBIDDEN
+            )
+        
         serializer.save(sender=self.request.user)
