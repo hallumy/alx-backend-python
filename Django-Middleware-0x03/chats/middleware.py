@@ -73,7 +73,7 @@ class OffensiveLanguageMiddleware:
         return ip
 
 
-class RolePermissionMiddleware:
+class RolepermissionMiddleware:
     """
     Middleware that restricts access to users with 'admin' or 'moderator' roles.
     Returns HTTP 403 Forbidden for unauthorized users.
