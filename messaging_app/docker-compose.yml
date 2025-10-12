@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python manage.py runserver
+    command: python3 manage.py runserver
     volumes:
       - .:/app
     ports:
