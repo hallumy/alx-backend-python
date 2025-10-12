@@ -14,6 +14,7 @@ RUN pip install --upgrade pip && \
 # Copy Django project folder (settings.py, etc.)
 COPY . /app/
 
+# docker run -p 8000:8000
 EXPOSE 8000
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
