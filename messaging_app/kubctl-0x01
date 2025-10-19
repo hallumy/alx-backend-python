@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Variables (adjust as needed)
+DEPLOYMENT_NAME="django-messaging-app"
+NAMESPACE="default"  # change if you use a different namespace
+SERVICE_NAME="django-messaging-service"
+SERVICE_PORT=8000
+DURATION="30s"
+THREADS=2
+CONNECTIONS=10
+
+echo "Scaling deployment $DEPLOYMENT_NAME to 3 replicas..."
+kubectl scale deployment "$DEPLOYMENT_NAME" --replicas=3 -n "$NAMESPACE"
+
+echo "Waiting for pods to be ready..."
+sleep 10  # wait a bit for pods to start
+
+echo "Listing pods:"
+kubectl get pods -n "$NAMESPACE" -l app="$DEPLOYMENT_NAME"
+
+# Get service cluster IP
+CLUSTER_IP=$(kubectl get svc "$SERVICE_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.clusterIP}')
+if [ -z "$CLUSTER_IP" ]; then
+  echo "Error: Could not get ClusterIP for service $SERVICE_NAME"
+  exit 1
+fi
+
+echo "Running load test on http://$CLUSTER_IP:$SERVICE_PORT/"
+wrk -t"$THREADS" -c"$CONNECTIONS" -d"$DURATION" "http://$CLUSTER_IP:$SERVICE_PORT/"
+
+echo "Resource usage:"
+kubectl top pods -n "$NAMESPACE"
