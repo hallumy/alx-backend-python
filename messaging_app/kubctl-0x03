@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+echo "✅ Applying updated deployment (image v2.0)..."
+kubectl apply -f blue_deployment.yaml
+
+echo "🔄 Watching rollout status..."
+kubectl rollout status deployment/django-blue
+
+echo "🌐 Starting curl test to check for downtime during rollout..."
+SERVICE_IP=$(kubectl get svc django-service -o jsonpath='{.spec.clusterIP}')
+
+# Start background curl test
+echo "Sending test requests to http://${SERVICE_IP}:80 (5 requests, 1s apart)"
+for i in {1..5}
+do
+  echo -n "Request $i: "
+  curl --fail --silent --max-time 2 http://${SERVICE_IP}:80 || echo "❌ Failed"
+  sleep 1
+done
+
+echo "✅ Rolling update complete. Current pods:"
+kubectl get pods -l app=django,version=blue -o wide
+
