@@ -2,13 +2,13 @@
 
 set -e
 
-echo "✅ Applying updated deployment (image v2.0)..."
+echo "Applying updated deployment (image v2.0)..."
 kubectl apply -f blue_deployment.yaml
 
-echo "🔄 Watching rollout status..."
+echo "Watching rollout status..."
 kubectl rollout status deployment/django-blue
 
-echo "🌐 Starting curl test to check for downtime during rollout..."
+echo "Starting curl test to check for downtime during rollout..."
 SERVICE_IP=$(kubectl get svc django-service -o jsonpath='{.spec.clusterIP}')
 
 # Start background curl test
@@ -20,6 +20,6 @@ do
   sleep 1
 done
 
-echo "✅ Rolling update complete. Current pods:"
+echo "Rolling update complete. Current pods:"
 kubectl get pods -l app=django,version=blue -o wide
 
